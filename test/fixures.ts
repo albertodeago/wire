@@ -1,5 +1,6 @@
 import type { Logger } from "../src/logger";
 import type * as SemVer from "semver";
+import type * as ActionExec from "@actions/exec";
 
 export const createMockLogger = (): Logger => ({
 	debug: () => {},

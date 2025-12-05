@@ -18,7 +18,7 @@ export type ReleaseResult = {
 	previousVersion: string;
 	newVersion: string;
 	tag: string;
-	majorTag?: string;
+	majorTag: string;
 };
 
 export type BumpType = "patch" | "minor" | "major";
