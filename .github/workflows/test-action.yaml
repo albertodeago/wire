@@ -1,0 +1,10 @@
+name: Test Action
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# TODO: how do we test this action?
