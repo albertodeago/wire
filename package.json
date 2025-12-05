@@ -1,0 +1,50 @@
+{
+  "name": "wire",
+  "version": "0.0.1",
+  "description": "Workflow Independent Release Engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui --coverage",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage",
+    "lint": "biome check --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "github",
+    "action",
+    "release",
+    "workflow",
+    "independent",
+    "versioning",
+    "monorepo"
+  ],
+  "author": "Alberto De Agostini",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "1.11.1",
+    "@actions/exec": "1.1.1",
+    "@actions/github": "6.0.1",
+    "@octokit/action": "8.0.4",
+    "semver": "7.7.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@types/node": "24.10.1",
+    "@types/semver": "7.7.1",
+    "@vercel/ncc": "0.38.4",
+    "@vitest/coverage-v8": "4.0.15",
+    "@vitest/ui": "4.0.15",
+    "lint-staged": "16.2.7",
+    "typescript": "5.9.3",
+    "vitest": "4.0.15"
+  },
+  "lint-staged": {
+    "*": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true --write"
+    ]
+  }
+}

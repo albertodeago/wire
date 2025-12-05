@@ -1,0 +1,48 @@
+name: 'WIRE - Workflow Independent Release Engine'
+description: 'Release multiple independently-versioned workflows from a single repository'
+author: 'Alberto De Agostini'
+
+branding:
+  icon: 'tag'
+  color: 'blue'
+
+inputs:
+  workflows:
+    description: "Workflows to release (comma-separated names, or 'all')"
+    required: true
+  bump-type:
+    description: 'Version bump type: patch, minor, or major'
+    required: true
+  versions-file:
+    description: 'Path to JSON file tracking workflow versions'
+    required: false
+    default: 'workflow-versions.json'
+  tag-pattern:
+    description: 'Tag pattern. Use {name} and {version} placeholders.'
+    required: false
+    default: '{name}/v{version}'
+  github-token:
+    description: 'GitHub token for pushing commits and tags'
+    required: true
+  git-user-name:
+    description: 'Git user name for commits'
+    required: false
+    default: 'github-actions[bot]'
+  git-user-email:
+    description: 'Git user email for commits'
+    required: false
+    default: 'github-actions[bot]@users.noreply.github.com'
+  commit-message-pattern:
+    description: 'Commit message pattern. Use {workflows} placeholder for list of released workflows.'
+    required: false
+    default: 'chore({workflows}): release new versions'
+
+outputs:
+  released:
+    description: 'JSON object mapping workflow names to new versions'
+  tags:
+    description: 'JSON array of all created tags'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
