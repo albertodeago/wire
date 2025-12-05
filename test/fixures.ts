@@ -36,5 +36,4 @@ export const createMockSemver = (
 ): typeof SemVer =>
 	({
 		inc: (_version: string, _release: string) => options.incReturns ?? null,
-		// Add other semver methods as needed
 	}) as unknown as typeof SemVer;
