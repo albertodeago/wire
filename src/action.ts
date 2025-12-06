@@ -153,8 +153,14 @@ export async function run(
 		return releases;
 	}
 
+	// Build updated versions from releases
+	const updatedVersions = { ...versions };
+	for (const release of releases) {
+		updatedVersions[release.workflow] = release.newVersion;
+	}
+
 	// Update versions file with the new ones
-	versionsRepository.write(inputs.versionsFile, versions);
+	versionsRepository.write(inputs.versionsFile, updatedVersions);
 
 	// Git operations
 	const configureResult = await gitClient.configure(
