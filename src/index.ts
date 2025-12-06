@@ -42,6 +42,11 @@ async function main(): Promise<void> {
 			},
 		);
 
+		if (outputs instanceof Error) {
+			core.setFailed(outputs.message);
+			return;
+		}
+
 		// Set outputs for downstream steps
 		core.setOutput("released", JSON.stringify(outputs.released));
 		core.setOutput("tags", JSON.stringify(outputs.tags));
