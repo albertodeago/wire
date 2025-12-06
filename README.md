@@ -275,6 +275,59 @@ When triggered, WIRE will:
 
 ---
 
+<details>
+<summary>
+
+## Development
+
+</summary>
+
+### Setup
+
+```bash
+npm install
+```
+
+### Testing
+
+```bash
+npm test
+```
+
+### Building
+
+The action must be compiled before committing changes:
+
+```bash
+npm run build
+```
+
+This uses `@vercel/ncc` to bundle the TypeScript code into a single `dist/index.js` file that GitHub Actions can execute.
+
+**Important:** Always commit the `dist/` folder after making code changes.
+
+### Releasing a New Version
+
+**Create and push tags**:
+First make changes, build, and commit them (dist included, and remember to update the changelog).
+Then create a version tag and push it:
+
+```bash
+# Create version tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# Update floating major tag
+git tag -f v1
+git push origin -f v1
+```
+
+Alternatively, you can use the Github Releases interface to create a new release, which will automatically create and push the corresponding tags.
+
+</details>
+
+---
+
 ## License
 
 MIT
