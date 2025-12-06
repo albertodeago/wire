@@ -76,10 +76,10 @@ export const getGitClient = ({
 			releases: ReleaseResult[],
 			commitMessagePattern: string,
 		) => {
-			const componentNames = releases.map((r) => r.workflow).join(",");
+			const workflowNames = releases.map((r) => r.workflow).join(",");
 			const commitMessage = commitMessagePattern.replace(
-				"{components}",
-				componentNames,
+				"{workflows}",
+				workflowNames,
 			);
 
 			const fullMessage = getCommitMessage(commitMessage, releases);

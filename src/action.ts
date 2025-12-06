@@ -123,7 +123,7 @@ export async function run(
 			`Invalid commit message pattern provided: ${inputs.commitMessagePattern}`,
 		);
 		return new InvalidCommitMessagePattern(
-			`Invalid commit message pattern: ${inputs.commitMessagePattern}. Must include {components} placeholder.`,
+			`Invalid commit message pattern: ${inputs.commitMessagePattern}. Must include {workflows} placeholder.`,
 		);
 	}
 

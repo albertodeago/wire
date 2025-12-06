@@ -92,7 +92,7 @@ describe("GitClient", () => {
 			const result = await client.commit(
 				"workflow-versions.json",
 				releases,
-				"chore({components}): release",
+				"chore({workflows}): release",
 			);
 
 			expect(result).toBeNull();
@@ -120,7 +120,7 @@ describe("GitClient", () => {
 			await client.commit(
 				"workflow-versions.json",
 				releases,
-				"chore({components}): release",
+				"chore({workflows}): release",
 			);
 
 			const commitCall = execSpy.mock.calls[1];
@@ -141,7 +141,7 @@ describe("GitClient", () => {
 			const result = await client.commit(
 				"workflow-versions.json",
 				releases,
-				"chore({components}): release",
+				"chore({workflows}): release",
 			);
 
 			expect(result).toBeInstanceOf(ErrorCommittingChanges);
@@ -160,7 +160,7 @@ describe("GitClient", () => {
 			const result = await client.commit(
 				"workflow-versions.json",
 				releases,
-				"chore({components}): release",
+				"chore({workflows}): release",
 			);
 
 			expect(result).toBeInstanceOf(ErrorCommittingChanges);
