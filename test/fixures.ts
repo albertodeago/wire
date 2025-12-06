@@ -1,4 +1,3 @@
-import type * as ActionExec from "@actions/exec";
 import type * as SemVer from "semver";
 import type { Logger } from "../src/logger";
 

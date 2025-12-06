@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
 	getVersionBumper,
-	type ReleaseResult,
 	VersionBumpError,
 	WorkflowVersionNotFound,
 } from "../src/version-bumper";
