@@ -51,13 +51,6 @@ class InvalidCommitMessagePattern extends Error {
 	}
 }
 
-class InvalidInputWorkflows extends Error {
-	constructor(message: string, cause?: Error) {
-		super(message, { cause });
-		this.name = "InvalidInputWorkflows";
-	}
-}
-
 type Inputs = {
 	workflows: string;
 	bumpType: string;
@@ -136,7 +129,7 @@ export async function run(
 		if (!validateWorkflows(workflowsToRelease, availableWorkflows)) {
 			const msg = `Invalid workflows requested. Input workflows: ${inputs.workflows}. Available workflows: ${availableWorkflows.join(", ")}`;
 			logger.error(msg);
-			return new InvalidInputWorkflows(msg);
+			return new NoAvailableWorkflowsFound(msg);
 		}
 	}
 
