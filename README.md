@@ -1,5 +1,9 @@
 # WIRE - Workflow Independent Release Engine
 
+<p align="center">
+<img src="./wire-no-bg.png" width="250">
+</p>
+
 A GitHub Action for releasing multiple independently-versioned workflows from a single repository. Perfect to share reusable workflows monorepos that are interconnected but that require separate versioning.
 
 > [!IMPORTANT]
