@@ -18,7 +18,7 @@ inputs:
     required: false
     default: 'workflow-versions.json'
   tag-pattern:
-    description: 'Tag pattern. Use {name} and {version} placeholders.'
+    description: 'Tag pattern. Must include {version}. {name} is required for multiple workflows, optional for single workflow.'
     required: false
     default: '{name}/v{version}'
   github-token:

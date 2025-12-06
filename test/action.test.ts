@@ -247,7 +247,60 @@ describe("action - run", () => {
 		expect(outputs).toBeInstanceOf(Error);
 		if (outputs instanceof Error) {
 			expect(outputs.message).toContain(
-				"Invalid tag pattern: invalid-pattern. Must include {name} and {version} placeholders.",
+				"Invalid tag pattern: invalid-pattern. Must include {version} placeholder.",
+			);
+		}
+	});
+
+	it("should accept tag-pattern without {name} for single-workflow repos", async () => {
+		const versionsRepository = createMockVersionsRepository({
+			"my-action": "1.0.0",
+		});
+		const versionBumper = createMockVersionBumper();
+		const gitClient = createMockGitClient();
+		const logger = createMockLogger();
+
+		const outputs = await run(
+			{
+				...defaultInputs,
+				workflows: "my-action",
+				tagPattern: "v{version}",
+			},
+			{ versionsRepository, versionBumper, gitClient, logger },
+		);
+
+		if (outputs instanceof Error) {
+			throw outputs;
+		}
+
+		expect(outputs.released).toEqual({
+			"my-action": "1.0.1",
+		});
+		expect(outputs.tags).toEqual(["v1.0.1", "v1"]);
+	});
+
+	it("should require {name} in tag-pattern when releasing multiple workflows", async () => {
+		const versionsRepository = createMockVersionsRepository({
+			"workflow-a": "1.0.0",
+			"workflow-b": "2.0.0",
+		});
+		const versionBumper = createMockVersionBumper();
+		const gitClient = createMockGitClient();
+		const logger = createMockLogger();
+
+		const outputs = await run(
+			{
+				...defaultInputs,
+				workflows: "workflow-a, workflow-b",
+				tagPattern: "v{version}",
+			},
+			{ versionsRepository, versionBumper, gitClient, logger },
+		);
+
+		expect(outputs).toBeInstanceOf(Error);
+		if (outputs instanceof Error) {
+			expect(outputs.message).toContain(
+				"Must include {name} and {version} placeholders when releasing multiple workflows",
 			);
 		}
 	});

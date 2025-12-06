@@ -10,8 +10,19 @@ function validateBumpType(bumpType: string): bumpType is BumpType {
 	return ["patch", "minor", "major"].includes(bumpType);
 }
 
-function validateTagPattern(tagPattern: string): boolean {
-	return tagPattern.includes("{name}") && tagPattern.includes("{version}");
+function validateTagPattern(
+	tagPattern: string,
+	workflowCount: number,
+): boolean {
+	// {version} is always required
+	if (!tagPattern.includes("{version}")) {
+		return false;
+	}
+	// {name} is required when releasing multiple workflows to avoid tag conflicts
+	if (workflowCount > 1 && !tagPattern.includes("{name}")) {
+		return false;
+	}
+	return true;
 }
 
 function validateCommitMessagePattern(pattern: string): boolean {
@@ -86,13 +97,6 @@ export async function run(
 		);
 	}
 
-	if (!validateTagPattern(inputs.tagPattern)) {
-		logger.error(`Invalid tag pattern provided: ${inputs.tagPattern}`);
-		return new InvalidTagPattern(
-			`Invalid tag pattern: ${inputs.tagPattern}. Must include {name} and {version} placeholders.`,
-		);
-	}
-
 	if (!validateCommitMessagePattern(inputs.commitMessagePattern)) {
 		logger.error(
 			`Invalid commit message pattern provided: ${inputs.commitMessagePattern}`,
@@ -134,6 +138,16 @@ export async function run(
 	}
 
 	logger.debug(`Workflows to release: ${workflowsToRelease.join(", ")}`);
+
+	// Validate tag pattern - {name} is only optional for single workflow releases
+	if (!validateTagPattern(inputs.tagPattern, workflowsToRelease.length)) {
+		const errorMsg =
+			workflowsToRelease.length > 1
+				? `Invalid tag pattern: ${inputs.tagPattern}. Must include {name} and {version} placeholders when releasing multiple workflows.`
+				: `Invalid tag pattern: ${inputs.tagPattern}. Must include {version} placeholder.`;
+		logger.error(errorMsg);
+		return new InvalidTagPattern(errorMsg);
+	}
 
 	// Prepare the list of workflows to release and related Tags
 	const releases = versionBumper.bump({
