@@ -1,13 +1,7 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
 import * as core from "@actions/core";
 import type { GitClient } from "./git-client";
 import type { Logger } from "./logger";
-import {
-	type BumpType,
-	VersionBumpError,
-	type VersionBumper,
-} from "./version-bumper";
+import type { BumpType, VersionBumper } from "./version-bumper";
 import type {
 	VersionsRepository,
 	WorkflowVersions,
@@ -34,82 +28,6 @@ export interface ActionOutputs {
 	tags: string[];
 }
 
-// ============================================================================
-// Input Parsing & Validation
-// ============================================================================
-
-export function getInputs(availableComponents: string[]): ActionInputs {
-	const componentsInput = core.getInput("components", { required: true });
-	const bumpType = core.getInput("bump", { required: true });
-
-	if (!["patch", "minor", "major"].includes(bumpType)) {
-		throw new Error(
-			`Invalid bump type: ${bumpType}. Must be patch, minor, or major.`,
-		);
-	}
-
-	const components = parseComponentsInput(componentsInput, availableComponents);
-	validateComponents(components, availableComponents);
-
-	return {
-		components,
-		bumpType: bumpType as BumpType,
-		versionsFile: core.getInput("versions-file") || "versions.json",
-		tagPattern: core.getInput("tag-pattern") || "{name}/v{version}",
-		majorTagPattern: core.getInput("major-tag-pattern") ?? "{name}/v{major}",
-		token: core.getInput("github-token", { required: true }),
-		gitUserName: core.getInput("git-user-name") || "github-actions[bot]",
-		gitUserEmail:
-			core.getInput("git-user-email") ||
-			"github-actions[bot]@users.noreply.github.com",
-		commitMessagePattern:
-			core.getInput("commit-message-pattern") ||
-			"chore({components}): release new versions",
-	};
-}
-
-export function parseComponentsInput(
-	input: string,
-	available: string[],
-): string[] {
-	const trimmed = input.trim().toLowerCase();
-
-	if (trimmed === "all") {
-		core.info(`Releasing all components: ${available.join(", ")}`);
-		return [...available];
-	}
-
-	const components = input
-		.split(",")
-		.map((c) => c.trim())
-		.filter((c) => c.length > 0);
-
-	const unique = [...new Set(components)];
-
-	if (unique.length === 0) {
-		throw new Error("No components specified");
-	}
-
-	return unique;
-}
-
-export function validateComponents(
-	toRelease: string[],
-	available: string[],
-): void {
-	const invalid = toRelease.filter((c) => !available.includes(c));
-
-	if (invalid.length > 0) {
-		throw new Error(
-			`Unknown component(s): ${invalid.join(", ")}. Available: ${available.join(", ")}`,
-		);
-	}
-}
-
-// ============================================================================
-// Main Execution
-// ============================================================================
-
 function validateBumpType(bumpType: string): bumpType is BumpType {
 	return ["patch", "minor", "major"].includes(bumpType);
 }
@@ -119,7 +37,15 @@ function validateTagPattern(tagPattern: string): boolean {
 }
 
 function validateCommitMessagePattern(pattern: string): boolean {
-	return pattern.includes("{components}");
+	return pattern.includes("{workflows}");
+}
+
+export function validateComponents(
+	toRelease: string[],
+	available: string[],
+): boolean {
+	const invalid = toRelease.filter((c) => !available.includes(c));
+	return invalid.length === 0;
 }
 
 class NoAvailableWorkflowsFound extends Error {
@@ -147,6 +73,13 @@ class InvalidCommitMessagePattern extends Error {
 	}
 }
 
+class InvalidInputWorkflows extends Error {
+	constructor(message: string, cause?: Error) {
+		super(message, { cause });
+		this.name = "InvalidInputWorkflows";
+	}
+}
+
 type Inputs = {
 	workflows: string;
 	bumpType: string;
@@ -170,7 +103,6 @@ export async function run(
 	deps: Dependencies,
 ): Promise<ActionOutputs | Error> {
 	const { versionsRepository, versionBumper, gitClient, logger } = deps;
-	/* Validate all inputs */
 
 	if (!validateBumpType(inputs.bumpType)) {
 		logger.error(`Invalid bump type provided: ${inputs.bumpType}`);
@@ -211,11 +143,28 @@ export async function run(
 
 	logger.debug(`Available workflows: ${availableWorkflows.join(", ")}`);
 
+	// Determine which workflows to release, "all" means all available ones
+	let workflowsToRelease: string[];
+	if (inputs.workflows.toLowerCase().trim() === "all") {
+		workflowsToRelease = availableWorkflows;
+		logger.debug("Releasing all workflows");
+	} else {
+		workflowsToRelease = inputs.workflows.split(",").map((w) => w.trim());
+		// Check that all asked workflows are within available ones
+		if (!validateComponents(workflowsToRelease, availableWorkflows)) {
+			const msg = `Invalid workflows requested. Input workflows: ${inputs.workflows}. Available workflows: ${availableWorkflows.join(", ")}`;
+			logger.error(msg);
+			return new InvalidInputWorkflows(msg);
+		}
+	}
+
+	logger.debug(`Workflows to release: ${workflowsToRelease.join(", ")}`);
+
 	// Prepare the list of workflows to release and related Tags
 	const releases = versionBumper.bump({
 		bumpType: inputs.bumpType,
 		tagPattern: inputs.tagPattern,
-		workflows: availableWorkflows,
+		workflows: workflowsToRelease,
 		versions,
 	});
 	if (releases instanceof Error) {
