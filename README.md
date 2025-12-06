@@ -2,6 +2,9 @@
 
 A GitHub Action for releasing multiple independently-versioned workflows from a single repository. Perfect to share reusable workflows monorepos that are interconnected but that require separate versioning.
 
+> [!IMPORTANT]
+> While WIRE is born to manage multiple reusable workflows in a single repository, it can also be used to manage versioning and releases for a single workflow or action. Keep reading for details!
+
 ## Problem It Solves
 
 When you distribute multiple reusable GitHub Workflows, managing their versions can get tricky.
@@ -103,7 +106,7 @@ jobs:
 | `workflows`              | Workflows to release (comma-separated names, or `'all'`)   | true     | - |
 | `bump-type`              | Version bump type: `patch`, `minor`, or `major`            | true     | - |
 | `versions-file`          | Path to JSON file tracking workflow versions               | false    | `workflow-versions.json` |
-| `tag-pattern`            | Tag pattern. Use `{name}` and `{version}` placeholders     | false    | `{name}/v{version}` |
+| `tag-pattern`            | Tag pattern. Must include `{version}`. `{name}` is required for multiple workflows, optional for single workflow | false    | `{name}/v{version}` |
 | `github-token`           | GitHub token for pushing commits and tags                  | true     | - |
 | `git-user-name`          | Git user name for commits                                  | false    | `github-actions[bot]`|
 | `git-user-email`         | Git user email for commits                                 | false    | `github-actions[bot]@users.noreply.github.com` |
@@ -162,6 +165,22 @@ jobs:
     tag-pattern: "v{version}-{name}"
     github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+#### Single-workflow repository (no name prefix)
+
+For repositories with a single action/workflow, you can omit `{name}` from the tag pattern to get clean tags like `v1.0.0` and `v1`:
+
+```yaml
+- uses: albertodeago/wire@v1
+  with:
+    workflows: "my-action"
+    bump-type: "patch"
+    tag-pattern: "v{version}"
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+> [!TIP]
+> This is actually how WIRE itself is published
 
 #### Custom versions file location
 
