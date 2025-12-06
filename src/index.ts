@@ -59,7 +59,7 @@ async function main(): Promise<void> {
 		await core.summary
 			.addHeading("🚀 WIRE Release Summary")
 			.addRaw(
-				`Released ${Object.keys(outputs.released).length} component(s):\n\n`,
+				`Released ${Object.keys(outputs.released).length} workflow(s):\n\n`,
 			)
 			.addRaw(releasedList)
 			.addBreak()

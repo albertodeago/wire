@@ -18,7 +18,7 @@ function validateCommitMessagePattern(pattern: string): boolean {
 	return pattern.includes("{workflows}");
 }
 
-export function validateComponents(
+export function validateWorkflows(
 	toRelease: string[],
 	available: string[],
 ): boolean {
@@ -133,7 +133,7 @@ export async function run(
 	} else {
 		workflowsToRelease = inputs.workflows.split(",").map((w) => w.trim());
 		// Check that all asked workflows are within available ones
-		if (!validateComponents(workflowsToRelease, availableWorkflows)) {
+		if (!validateWorkflows(workflowsToRelease, availableWorkflows)) {
 			const msg = `Invalid workflows requested. Input workflows: ${inputs.workflows}. Available workflows: ${availableWorkflows.join(", ")}`;
 			logger.error(msg);
 			return new InvalidInputWorkflows(msg);
@@ -190,21 +190,19 @@ export async function run(
 		return tagResult;
 	}
 
+	logger.debug(
+		"All git operations completed successfully, now setting action outputs",
+	);
+
 	// Build outputs
-	// const released: ComponentVersions = {};
-	// const tags: string[] = [];
-
-	// for (const release of releases) {
-	// 	released[release.component] = release.newVersion;
-	// 	tags.push(release.tag);
-	// 	if (release.majorTag) {
-	// 		tags.push(release.majorTag);
-	// 	}
-	// }
-
-	// core.info(`\n✅ Successfully released ${releases.length} component(s)`);
-	const released = {};
+	const released: WorkflowVersions = {};
 	const tags: string[] = [];
+
+	for (const release of releases) {
+		released[release.workflow] = release.newVersion;
+		tags.push(release.tag);
+		tags.push(release.majorTag);
+	}
 
 	return { released, tags };
 }
