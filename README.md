@@ -89,8 +89,8 @@ jobs:
       - name: Release
         uses: albertodeago/wire@v1
         with:
-          workflows: ${{ github.event.inputs.workflows }}
-          bump-type: ${{ github.event.inputs.bump-type }}
+          workflows: ${{ inputs.workflows }}
+          bump-type: ${{ inputs.bump-type }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
