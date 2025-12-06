@@ -327,6 +327,14 @@ This uses `@vercel/ncc` to bundle the TypeScript code into a single `dist/index.
 
 ### Releasing a New Version
 
+Wire is itself released using WIRE!
+
+To release a new version, trigger the `Release Workflows` workflow from the Actions tab.
+
+#### If shit happens
+
+Release it manually by:
+
 **Create and push tags**:
 First make changes, build, and commit them (dist included, and remember to update the changelog).
 Then create a version tag and push it:
