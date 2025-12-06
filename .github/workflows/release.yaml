@@ -53,7 +53,7 @@ jobs:
           fi
 
       - name: Release
-        uses: albertodeago/wire@v0.2.0
+        uses: albertodeago/wire@v1
         with:
           workflows: "wire"
           bump-type: ${{ inputs.bump-type }}
