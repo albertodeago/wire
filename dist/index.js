@@ -32648,8 +32648,14 @@ exports.run = run;
 function validateBumpType(bumpType) {
     return ["patch", "minor", "major"].includes(bumpType);
 }
-function validateTagPattern(tagPattern) {
-    return tagPattern.includes("{name}") && tagPattern.includes("{version}");
+function validateTagPattern(tagPattern, workflowCount) {
+    if (!tagPattern.includes("{version}")) {
+        return false;
+    }
+    if (workflowCount > 1 && !tagPattern.includes("{name}")) {
+        return false;
+    }
+    return true;
 }
 function validateCommitMessagePattern(pattern) {
     return pattern.includes("{workflows}");
@@ -32688,10 +32694,6 @@ async function run(inputs, deps) {
         logger.error(`Invalid bump type provided: ${inputs.bumpType}`);
         return new InvalidBumpType(`Invalid bump type: ${inputs.bumpType}. Must be one of "patch", "minor", or "major".`);
     }
-    if (!validateTagPattern(inputs.tagPattern)) {
-        logger.error(`Invalid tag pattern provided: ${inputs.tagPattern}`);
-        return new InvalidTagPattern(`Invalid tag pattern: ${inputs.tagPattern}. Must include {name} and {version} placeholders.`);
-    }
     if (!validateCommitMessagePattern(inputs.commitMessagePattern)) {
         logger.error(`Invalid commit message pattern provided: ${inputs.commitMessagePattern}`);
         return new InvalidCommitMessagePattern(`Invalid commit message pattern: ${inputs.commitMessagePattern}. Must include {workflows} placeholder.`);
@@ -32720,6 +32722,13 @@ async function run(inputs, deps) {
         }
     }
     logger.debug(`Workflows to release: ${workflowsToRelease.join(", ")}`);
+    if (!validateTagPattern(inputs.tagPattern, workflowsToRelease.length)) {
+        const errorMsg = workflowsToRelease.length > 1
+            ? `Invalid tag pattern: ${inputs.tagPattern}. Must include {name} and {version} placeholders when releasing multiple workflows.`
+            : `Invalid tag pattern: ${inputs.tagPattern}. Must include {version} placeholder.`;
+        logger.error(errorMsg);
+        return new InvalidTagPattern(errorMsg);
+    }
     const releases = versionBumper.bump({
         bumpType: inputs.bumpType,
         tagPattern: inputs.tagPattern,
