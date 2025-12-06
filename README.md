@@ -210,6 +210,30 @@ For repositories with a single action/workflow, you can omit `{name}` from the t
     echo "Tags: ${{ steps.release.outputs.tags }}"
 ```
 
+#### Creating GitHub Releases
+
+WIRE focuses on versioning and tagging. To also create GitHub Releases, combine it with a release action (this is just an example):
+
+```yaml
+- name: Release
+  id: wire
+  uses: albertodeago/wire@v1
+  with:
+    workflows: "my-workflow"
+    bump-type: "patch"
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+
+- name: Create GitHub Release
+  uses: softprops/action-gh-release@v2
+  with:
+    tag_name: ${{ fromJSON(steps.wire.outputs.tags)[0] }}
+    name: ${{ fromJSON(steps.wire.outputs.tags)[0] }}
+    body: |
+      ## Released
+      ${{ steps.wire.outputs.released }}
+    generate_release_notes: true
+```
+
 ---
 
 ## Versions File
