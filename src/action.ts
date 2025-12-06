@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import type { GitClient } from "./git-client";
 import type { Logger } from "./logger";
 import type { BumpType, VersionBumper } from "./version-bumper";
@@ -6,27 +5,6 @@ import type {
 	VersionsRepository,
 	WorkflowVersions,
 } from "./versions-repository";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface ActionInputs {
-	workflows: string[];
-	bumpType: BumpType;
-	versionsFile: string;
-	tagPattern: string;
-	majorTagPattern: string;
-	token: string;
-	gitUserName: string;
-	gitUserEmail: string;
-	commitMessagePattern: string;
-}
-
-export interface ActionOutputs {
-	released: WorkflowVersions;
-	tags: string[];
-}
 
 function validateBumpType(bumpType: string): bumpType is BumpType {
 	return ["patch", "minor", "major"].includes(bumpType);
@@ -90,6 +68,10 @@ type Inputs = {
 	gitUserEmail: string;
 	commitMessagePattern: string;
 };
+export type Outputs = {
+	released: WorkflowVersions;
+	tags: string[];
+};
 
 type Dependencies = {
 	versionsRepository: VersionsRepository;
@@ -101,7 +83,7 @@ type Dependencies = {
 export async function run(
 	inputs: Inputs,
 	deps: Dependencies,
-): Promise<ActionOutputs | Error> {
+): Promise<Outputs | Error> {
 	const { versionsRepository, versionBumper, gitClient, logger } = deps;
 
 	if (!validateBumpType(inputs.bumpType)) {
