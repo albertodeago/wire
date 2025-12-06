@@ -1,9 +1,9 @@
-import * as github from "@actions/github";
 import * as core from "@actions/core";
+import * as github from "@actions/github";
 import { run } from "./action";
-import { getVersionsRepository } from "./versions-repository";
-import { getVersionBumper } from "./version-bumper";
 import { getGitClient } from "./git-client";
+import { getVersionBumper } from "./version-bumper";
+import { getVersionsRepository } from "./versions-repository";
 
 async function main(): Promise<void> {
 	try {

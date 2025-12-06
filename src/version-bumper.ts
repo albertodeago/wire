@@ -1,8 +1,7 @@
-import * as SemVer from "semver";
 import * as core from "@actions/core";
-
-import type { WorkflowVersions } from "./versions-repository";
+import * as SemVer from "semver";
 import type { Logger } from "./logger";
+import type { WorkflowVersions } from "./versions-repository";
 
 export type VersionBumper = {
 	bump: (params: {

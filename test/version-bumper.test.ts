@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	getVersionBumper,
 	type ReleaseResult,
-	WorkflowVersionNotFound,
 	VersionBumpError,
+	WorkflowVersionNotFound,
 } from "../src/version-bumper";
 import type { WorkflowVersions } from "../src/versions-repository";
 import { createMockLogger, createMockSemver } from "./fixures";

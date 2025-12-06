@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-	getGitClient,
-	ErrorConfiguringGit,
 	ErrorCommittingChanges,
-	ErrorPushingChanges,
+	ErrorConfiguringGit,
 	ErrorCreatingPushingTags,
+	ErrorPushingChanges,
+	getGitClient,
 } from "../src/git-client";
 import type { ReleaseResult } from "../src/version-bumper";
 import { createMockLogger } from "./fixures";

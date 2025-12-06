@@ -1,7 +1,7 @@
-import * as ActionExec from "@actions/exec";
 import * as core from "@actions/core";
-import type { ReleaseResult } from "./version-bumper";
+import * as ActionExec from "@actions/exec";
 import type { Logger } from "./logger";
+import type { ReleaseResult } from "./version-bumper";
 
 export type GitClient = {
 	configure: (
