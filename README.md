@@ -1,6 +1,6 @@
 # WIRE - Workflow Independent Release Engine
 
-<p align="center">
+<p align="center" style="background-color: #0d1117;">
 <img src="./wire-no-bg.png" width="250">
 </p>
 
