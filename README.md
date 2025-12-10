@@ -136,6 +136,7 @@ jobs:
   with:
     workflows: "my-workflow"
     bump-type: "patch"
+    tag-pattern: "v{version}"
     github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
