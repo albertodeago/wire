@@ -129,14 +129,13 @@ jobs:
 
 ### Examples
 
-#### Release a single workflow
+#### Release a single workflow (in a repo that contains multiple workflows)
 
 ```yaml
 - uses: albertodeago/wire@v1
   with:
     workflows: "my-workflow"
     bump-type: "patch"
-    tag-pattern: "v{version}"
     github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
